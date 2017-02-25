@@ -6,6 +6,7 @@ tmp/
 *.bak
 *.swp
 *~.nib
+*.classpath
 local.properties
 .settings/
 .loadpath
