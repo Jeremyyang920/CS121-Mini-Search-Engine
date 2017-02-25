@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Indexer {
-
     public static File [] listofFiles = new File [74];
     public static ArrayList<File> allFiles= new ArrayList<File>();
 
@@ -144,14 +143,11 @@ public class Indexer {
 		  }
 
 	}
-	
 
-    
 	public static void main(String[] args) throws InterruptedException, IOException 
 	{
 		splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
 		listofFiles=  allFiles.toArray(listofFiles);
-	
 		ExecutorService service= Executors.newFixedThreadPool(2);
 		service.submit(() -> {
 			try {
