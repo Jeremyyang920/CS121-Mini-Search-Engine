@@ -1,5 +1,6 @@
 // Authors: Jeremy Yang, Anuj Shah, Jack Murray
 // Assignment 3: Search Engine
+// File: Indexer.java
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,12 +40,12 @@ public class Indexer
     	ConcurrentLinkedQueue<String> q = map.get(key);
     	if (q == null) 
     	{
-    	  q = new ConcurrentLinkedQueue<String>();
-    	  ConcurrentLinkedQueue<String> curQ = map.putIfAbsent(key, q);
-    	  if(curQ != null) 
-    	  {
-    	    q = curQ;
-    	  }
+    		q = new ConcurrentLinkedQueue<String>();
+    		ConcurrentLinkedQueue<String> curQ = map.putIfAbsent(key, q);
+    		if(curQ != null) 
+    		{
+    			q = curQ;
+    		}
     	}
     	q.add(value);
     }
@@ -76,7 +77,7 @@ public class Indexer
 			for (Path file: stream)
 			{
 				Document fileDoc;
-				try 
+				try // Try to read the file as a HTML file.
 				{
 					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
 					
@@ -96,19 +97,21 @@ public class Indexer
 			        	addElement(map,token,f.getName());
 			    	}
 			    	
-			    	// System.out.println(fileDoc.text());
-			    	// for (Element e: title)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: h1)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: h2)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: h3)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: bold)
-			    	//	System.out.println(e.text());
+			    	/* Print the text inside of the tags.
+			    	System.out.println(fileDoc.text());
+			    	for (Element e: title)
+			    		System.out.println(e.text());
+			    	for (Element e: h1)
+			    		System.out.println(e.text());
+			    	for (Element e: h2)
+			    		System.out.println(e.text());
+			    	for (Element e: h3)
+			    		System.out.println(e.text());
+			    	for (Element e: bold)
+			    		System.out.println(e.text());
+			    	*/
 				}
-				catch (Exception e) 
+				catch (Exception e) // If reading HTML fails, read it as a TXT file.
 				{
 					String line;
 					try 
@@ -152,7 +155,7 @@ public class Indexer
 			for (Path file: stream)
 			{
 				Document fileDoc;
-				try 
+				try // Try to read the file as a HTML file.
 				{
 					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
 					
@@ -172,19 +175,21 @@ public class Indexer
 			        	addElement(map,token,f.getName());
 			    	}
 			    	
-			    	// System.out.println(fileDoc.text());
-			    	// for (Element e: title)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: h1)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: h2)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: h3)
-			    	//	System.out.println(e.text());
-			    	// for (Element e: bold)
-			    	//	System.out.println(e.text());
+			    	/* Print the text inside of the tags.
+			    	System.out.println(fileDoc.text());
+			    	for (Element e: title)
+			    		System.out.println(e.text());
+			    	for (Element e: h1)
+			    		System.out.println(e.text());
+			    	for (Element e: h2)
+			    		System.out.println(e.text());
+			    	for (Element e: h3)
+			    		System.out.println(e.text());
+			    	for (Element e: bold)
+			    		System.out.println(e.text());
+			    	*/
 				}
-				catch (Exception e) 
+				catch (Exception e) // If reading HTML fails, read it as a TXT file.
 				{
 					String line;
 					try 
@@ -245,9 +250,10 @@ public class Indexer
 	    br.close();
 	    
 		splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
-		// splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\Test"));
 		// splitFile(Paths.get("C:\\Desktop\\WEBPAGES_RAW"));
+		
 		listofFiles = allFiles.toArray(listofFiles);
+		
 		ExecutorService service = Executors.newFixedThreadPool(2);
 		service.submit(() -> {
 			try 
