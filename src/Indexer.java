@@ -1,4 +1,5 @@
 // Authors: Jeremy Yang, Anuj Shah, Jack Murray
+// Assignment 3: Search Engine
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,7 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,6 +32,7 @@ public class Indexer
 {
     public static File[] listofFiles = new File[74];
     public static ArrayList<File> allFiles = new ArrayList<File>();
+    public static ArrayList<String> stopWords = new ArrayList<String>();
 
     static void addElement(ConcurrentHashMap<String,ConcurrentLinkedQueue<String>>map, String key, String value)
     {
@@ -65,54 +66,71 @@ public class Indexer
     	  
     static void i1() throws FileNotFoundException, IOException
     {
-		File[] s1 = Arrays.copyOfRange(listofFiles,0,37);
-		String line;
-		for (File f: s1)
+		File[] files = Arrays.copyOfRange(listofFiles,0,37);
+		
+		for (File f: files)
 		{	
 			ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map = new ConcurrentHashMap<>();
 			DirectoryStream<Path> stream = Files.newDirectoryStream(f.toPath());
-			for(Path file: stream)
+			
+			for (Path file: stream)
 			{
-//				Document fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
-//		    	Elements title = fileDoc.getElementsByTag("title");
-//		    	Elements h1 = fileDoc.getElementsByTag("h1");
-//		    	Elements h2 = fileDoc.getElementsByTag("h2");
-//		    	Elements h3 = fileDoc.getElementsByTag("h3");
-//		    	Elements bold = fileDoc.getElementsByTag("b");
-		    	
-		    	// System.out.println(fileDoc.text());
-//		    	for (Element e: title)
-//		    		System.out.println(e.text());
-//		    	for (Element e: h1)
-//		    		System.out.println(e.text());
-//		    	for (Element e: h2)
-//		    		System.out.println(e.text());
-//		    	for (Element e: h3)
-//		    		System.out.println(e.text());
-//		    	for (Element e: bold)
-//		    		System.out.println(e.text());
-		    	
+				Document fileDoc;
 				try 
-				(
-				    InputStream fis = new FileInputStream(file.toFile());
-				    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-				    BufferedReader br = new BufferedReader(isr);
-				) 
 				{
-				    while ((line = br.readLine()) != null) 
-				    {
-				    	// Document doc = Jsoup.parse(line);
-				    	// line = doc.text();
-				        String[] words = line.split(" ");
-				        for(String word: words)
-				        {
-				        	if (word.equals("") || word.equals("@") || word.equals("&"))
-				        	{
-				        		continue;
-				        	}
-				        	addElement(map,word,f.getName());
-				        }
-				    }
+					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
+					
+			    	Elements title = fileDoc.getElementsByTag("title");
+			    	Elements h1 = fileDoc.getElementsByTag("h1");
+			    	Elements h2 = fileDoc.getElementsByTag("h2");
+			    	Elements h3 = fileDoc.getElementsByTag("h3");
+			    	Elements bold = fileDoc.getElementsByTag("b");
+					
+			    	String[] tokens = fileDoc.text().split(" ");
+			    	for (String token: tokens)
+			    	{
+			    		if (stopWords.contains(token))
+			        	{
+			        		continue;
+			        	}
+			        	addElement(map,token,f.getName());
+			    	}
+			    	
+			    	// System.out.println(fileDoc.text());
+			    	// for (Element e: title)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: h1)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: h2)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: h3)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: bold)
+			    	//	System.out.println(e.text());
+				}
+				catch (Exception e) 
+				{
+					String line;
+					try 
+					(
+					    InputStream fis = new FileInputStream(file.toFile());
+					    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+					    BufferedReader br = new BufferedReader(isr);
+					) 
+					{
+					    while ((line = br.readLine()) != null) 
+					    {
+					        String[] words = line.split(" ");
+					        for(String word: words)
+					        {
+					        	if (stopWords.contains(word) || word.equals(""))
+					        	{
+					        		continue;
+					        	}
+					        	addElement(map,word,f.getName());
+					        }
+					    }
+					}
 				}
 			}
 			outWrite(map,f.getAbsolutePath());
@@ -123,32 +141,72 @@ public class Indexer
     }
     
     static void i2() throws FileNotFoundException, IOException
-    {
-		File[] s2 = Arrays.copyOfRange(listofFiles, 37, 74);
-		String line;
-		for (File f: s2)
-		{
+    {   
+		File[] files = Arrays.copyOfRange(listofFiles,37,74);
+		
+		for (File f: files)
+		{	
 			ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map = new ConcurrentHashMap<>();
 			DirectoryStream<Path> stream = Files.newDirectoryStream(f.toPath());
-			for(Path file: stream)
+			
+			for (Path file: stream)
 			{
+				Document fileDoc;
 				try 
-				(
-				    InputStream fis = new FileInputStream(file.toFile());
-				    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-				    BufferedReader br = new BufferedReader(isr);
-				) 
 				{
-				    while ((line = br.readLine()) != null) 
-				    {
-				    	// Document doc = Jsoup.parse(line);
-				    	// line = doc.text();
-				        String[] words = line.split(" ");
-				        for(String word: words)
-				        {
-				        	addElement(map,word,f.getName());
-				        }
-				    }
+					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
+					
+			    	Elements title = fileDoc.getElementsByTag("title");
+			    	Elements h1 = fileDoc.getElementsByTag("h1");
+			    	Elements h2 = fileDoc.getElementsByTag("h2");
+			    	Elements h3 = fileDoc.getElementsByTag("h3");
+			    	Elements bold = fileDoc.getElementsByTag("b");
+					
+			    	String[] tokens = fileDoc.text().split(" ");
+			    	for (String token: tokens)
+			    	{
+			    		if (stopWords.contains(token))
+			        	{
+			        		continue;
+			        	}
+			        	addElement(map,token,f.getName());
+			    	}
+			    	
+			    	// System.out.println(fileDoc.text());
+			    	// for (Element e: title)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: h1)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: h2)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: h3)
+			    	//	System.out.println(e.text());
+			    	// for (Element e: bold)
+			    	//	System.out.println(e.text());
+				}
+				catch (Exception e) 
+				{
+					String line;
+					try 
+					(
+					    InputStream fis = new FileInputStream(file.toFile());
+					    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+					    BufferedReader br = new BufferedReader(isr);
+					) 
+					{
+					    while ((line = br.readLine()) != null) 
+					    {
+					        String[] words = line.split(" ");
+					        for(String word: words)
+					        {
+					        	if (stopWords.contains(word) || word.equals(""))
+					        	{
+					        		continue;
+					        	}
+					        	addElement(map,word,f.getName());
+					        }
+					    }
+					}
 				}
 			}
 			outWrite(map,f.getAbsolutePath());
@@ -178,6 +236,14 @@ public class Indexer
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
 	{
+	    InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+	    BufferedReader br = new BufferedReader(isr);
+	    String line;
+	    while ((line = br.readLine()) != null)
+	    	stopWords.add(line);
+	    br.close();
+	    
 		splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		// splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\Test"));
 		// splitFile(Paths.get("C:\\Desktop\\WEBPAGES_RAW"));
@@ -205,21 +271,7 @@ public class Indexer
 		});
 		service.awaitTermination(1, TimeUnit.SECONDS);
 		service.shutdown();
-//		try 
-//		{
-//			 ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map;
-//	         FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\Test\\4.ser");
-//	         ObjectInputStream in = new ObjectInputStream(fileIn);
-//	         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
-//	         System.out.println(map);
-//	         in.close();
-//	         fileIn.close();
-//	      }
-//		catch(IOException i) 
-//		{
-//	         i.printStackTrace();
-//	         return;
-//		}
+		
 //		for (String key:map.keySet())
 //			System.out.println(key + ":" +(map.get(key).toString()));
 	}
