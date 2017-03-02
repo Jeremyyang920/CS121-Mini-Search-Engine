@@ -27,13 +27,11 @@ public class Deserialize
 		
 		for (int i = 0; i < 75; i++)
 		{
-			if (i == 9)
-				continue;
 			
 			try 
 			{
 				 ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map;
-		         FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
 		         ObjectInputStream in = new ObjectInputStream(fileIn);
 		         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
 		         for (String a: map.keySet())
