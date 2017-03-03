@@ -19,12 +19,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Deserialize 
 {
 	private static HashSet<String> uniqueWords = new HashSet<String>();
-	
+	private static ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> everything = new ConcurrentHashMap<String,ConcurrentLinkedQueue<String>>();
+
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ClassNotFoundException
 	{
+	
 		// String s = "";
-		
+		long time=System.currentTimeMillis();
 		for (int i = 0; i < 75; i++)
 		{
 			
@@ -34,10 +36,12 @@ public class Deserialize
 		         FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
 		         ObjectInputStream in = new ObjectInputStream(fileIn);
 		         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
-		         for (String a: map.keySet())
-		         {
-		        	 uniqueWords.add(a);
-		         }
+		         everything.putAll(map);
+
+//		         for (String a: map.keySet())
+//		         {
+//		        	 uniqueWords.add(a);
+//		         }
 		         // s += map.toString();
 		         // s += "\n\n";
 		         in.close();
@@ -49,8 +53,11 @@ public class Deserialize
 		         return;
 			}
 		}
+		long end=System.currentTimeMillis();
+		System.out.println(end-time);
+		System.out.println("Done Combining");
 		
-		System.out.println(uniqueWords.size());
+		//System.out.println(uniqueWords.size());
 		
 		// BufferedWriter writer = null;
         // try 
