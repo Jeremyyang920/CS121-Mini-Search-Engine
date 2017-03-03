@@ -5,12 +5,10 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
@@ -65,89 +63,23 @@ public class Indexer
 		return allFiles;
     }
     	  
-    static void i1() throws FileNotFoundException, IOException
+    static void i1() throws IOException 
     {
 		File[] files = Arrays.copyOfRange(listofFiles,0,37);
-		
-		for (File f: files)
-		{	
-			ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map = new ConcurrentHashMap<>();
-			DirectoryStream<Path> stream = Files.newDirectoryStream(f.toPath());
-			
-			for (Path file: stream)
-			{
-				Document fileDoc;
-				try // Try to read the file as a HTML file.
-				{
-					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
-					
-			    	Elements title = fileDoc.getElementsByTag("title");
-			    	Elements h1 = fileDoc.getElementsByTag("h1");
-			    	Elements h2 = fileDoc.getElementsByTag("h2");
-			    	Elements h3 = fileDoc.getElementsByTag("h3");
-			    	Elements bold = fileDoc.getElementsByTag("b");
-					
-			    	String[] tokens = fileDoc.text().split(" ");
-			    	for (String token: tokens)
-			    	{
-			    		if (stopWords.contains(token))
-			        	{
-			        		continue;
-			        	}
-			        	addElement(map,token,f.getName());
-			    	}
-			    	
-			    	/* Print the text inside of the tags.
-			    	System.out.println(fileDoc.text());
-			    	for (Element e: title)
-			    		System.out.println(e.text());
-			    	for (Element e: h1)
-			    		System.out.println(e.text());
-			    	for (Element e: h2)
-			    		System.out.println(e.text());
-			    	for (Element e: h3)
-			    		System.out.println(e.text());
-			    	for (Element e: bold)
-			    		System.out.println(e.text());
-			    	*/
-				}
-				catch (Exception e) // If reading HTML fails, read it as a TXT file.
-				{
-					String line;
-					try 
-					(
-					    InputStream fis = new FileInputStream(file.toFile());
-					    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-					    BufferedReader br = new BufferedReader(isr);
-					) 
-					{
-					    while ((line = br.readLine()) != null) 
-					    {
-					        String[] words = line.split(" ");
-					        for(String word: words)
-					        {
-					        	if (stopWords.contains(word) || word.equals(""))
-					        	{
-					        		continue;
-					        	}
-					        	addElement(map,word,f.getName());
-					        }
-					    }
-					}
-				}
-			}
-			outWrite(map,f.getAbsolutePath());
-			map = null;
-			System.gc();
-			System.out.println(f.getAbsolutePath());
-		}
+		performIndex(files);
+
     }
     
-    static void i2() throws FileNotFoundException, IOException
+    static void i2() throws IOException 
     {   
 		File[] files = Arrays.copyOfRange(listofFiles,37,75);
+		performIndex(files);
 		
-		for (File f: files)
+    }
+    
+    static void performIndex(File [] files) throws IOException
+    {
+    	for (File f: files)
 		{	
 			ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map = new ConcurrentHashMap<>();
 			DirectoryStream<Path> stream = Files.newDirectoryStream(f.toPath());
@@ -172,22 +104,11 @@ public class Indexer
 			        	{
 			        		continue;
 			        	}
-			        	addElement(map,token,f.getName());
+			    		String prefix=file.toString().substring(24);
+			        	addElement(map,token,prefix);
 			    	}
 			    	
-			    	/* Print the text inside of the tags.
-			    	System.out.println(fileDoc.text());
-			    	for (Element e: title)
-			    		System.out.println(e.text());
-			    	for (Element e: h1)
-			    		System.out.println(e.text());
-			    	for (Element e: h2)
-			    		System.out.println(e.text());
-			    	for (Element e: h3)
-			    		System.out.println(e.text());
-			    	for (Element e: bold)
-			    		System.out.println(e.text());
-			    	*/
+	
 				}
 				catch (Exception e) // If reading HTML fails, read it as a TXT file.
 				{
@@ -208,7 +129,9 @@ public class Indexer
 					        	{
 					        		continue;
 					        	}
-					        	addElement(map,word,f.getName());
+					        	String prefix=file.toString().substring(24);
+
+					        	addElement(map,word,prefix);
 					        }
 					    }
 					}
@@ -257,13 +180,10 @@ public class Indexer
 
 		ExecutorService service = Executors.newFixedThreadPool(2);
 		service.submit(() -> {
-			try 
-			{
+			try {
 				i1();
-			} 
-			catch (IOException e) 
-			{
-				e.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		});
 		service.submit(() -> {
