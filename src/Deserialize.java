@@ -2,16 +2,11 @@
 // Assignment 3: Search Engine
 // File: Deserialize.java
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
+import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -56,6 +51,19 @@ public class Deserialize
 		long end=System.currentTimeMillis();
 		System.out.println(end-time);
 		System.out.println("Done Combining");
+		 try 
+		  {
+		         FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		         out.writeObject(everything);
+		         out.close();
+		         fileOut.close();
+		         System.out.printf("Serialized data is saved.");
+		  }
+		  catch (IOException i) 
+		  {
+		      i.printStackTrace();
+		  }
 		
 		//System.out.println(uniqueWords.size());
 		
