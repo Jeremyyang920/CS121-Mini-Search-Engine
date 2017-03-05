@@ -68,18 +68,30 @@ public class Searcher
         JSONObject js = getJSON();
         
         Scanner query = new Scanner(System.in);
-        String word;
+        String command;
         while (true)
         {
         	System.out.print("Enter Query: ");
-        	word = query.nextLine();
-        	if (word.equals("!quit"))
+        	command = query.nextLine();
+        	if (command.equals("!quit"))
         	{
         		System.out.println("Program terminated.");
         		break;
         	}
-        	ConcurrentLinkedQueue<String> result = everything.get(word);
+        	ConcurrentLinkedQueue<String> result = everything.get(command);
         	if (result == null)
+        	{
+        		result = new ConcurrentLinkedQueue<String>();
+        	}
+        	String[] words = command.split(" ");
+        	if (words.length > 1)
+        	{
+        		for (String word: words)
+            	{
+            		result.addAll(everything.get(word));
+            	}
+        	}
+        	if (result.isEmpty())
         	{
         		System.out.println("No results found.");
         		continue;
