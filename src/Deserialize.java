@@ -19,51 +19,60 @@ public class Deserialize
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ClassNotFoundException
 	{
-	
 		// String s = "";
-		long time=System.currentTimeMillis();
+		
+		long time = System.currentTimeMillis();
 		for (int i = 0; i < 75; i++)
 		{
-			
 			try 
 			{
 				 ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map;
-		         FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+				 
+				 /* CHANGE BASED ON COMPUTER */
+		         // FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         
 		         ObjectInputStream in = new ObjectInputStream(fileIn);
 		         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
 		         everything.putAll(map);
 
-//		         for (String a: map.keySet())
-//		         {
-//		        	 uniqueWords.add(a);
-//		         }
+		         // for (String a: map.keySet())
+		         // {
+		         //		uniqueWords.add(a);
+		         // }
+		         
 		         // s += map.toString();
 		         // s += "\n\n";
+		         
 		         in.close();
 		         fileIn.close();
 		    }
-			catch(IOException e) 
+			catch (IOException e) 
 			{
 		         e.printStackTrace();
 		         return;
 			}
 		}
-		long end=System.currentTimeMillis();
+		long end = System.currentTimeMillis();
 		System.out.println(end-time);
 		System.out.println("Done Combining");
-		 try 
-		  {
-		         FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
-		         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		         out.writeObject(everything);
-		         out.close();
-		         fileOut.close();
-		         System.out.printf("Serialized data is saved.");
-		  }
-		  catch (IOException i) 
-		  {
-		      i.printStackTrace();
-		  }
+		 
+		try 
+		{
+			/* CHANGE BASED ON COMPUTER */
+			// FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			FileOutputStream fileOut = new FileOutputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		    out.writeObject(everything);
+		    out.close();
+		    fileOut.close();
+		    System.out.printf("Serialized data is saved.");
+		 }
+		 catch (IOException i) 
+		 {
+			 i.printStackTrace();
+		 }
 		
 		//System.out.println(uniqueWords.size());
 		

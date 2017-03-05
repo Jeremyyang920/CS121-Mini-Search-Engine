@@ -67,17 +67,15 @@ public class Indexer
     {
 		File[] files = Arrays.copyOfRange(listofFiles,0,37);
 		performIndex(files);
-
     }
     
     static void i2() throws IOException 
     {   
 		File[] files = Arrays.copyOfRange(listofFiles,37,75);
 		performIndex(files);
-		
     }
     
-    static void performIndex(File [] files) throws IOException
+    static void performIndex(File[] files) throws IOException
     {
     	for (File f: files)
 		{	
@@ -164,7 +162,8 @@ public class Indexer
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
 	{
-	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
+		InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    // InputStream fis = new FileInputStream(new File("StopWords.txt"));
 	    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
 	    String line;
@@ -172,17 +171,21 @@ public class Indexer
 	    	stopWords.add(line);
 	    br.close();
 	    
-		splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
-		// splitFile(Paths.get("C:\\Desktop\\WEBPAGES_RAW"));
+	    /* CHANGE BASED ON COMPUTER */
+		// splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
+		splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		
 		listofFiles = allFiles.toArray(listofFiles);
 		long start = System.nanoTime();
 
 		ExecutorService service = Executors.newFixedThreadPool(2);
 		service.submit(() -> {
-			try {
+			try 
+			{
 				i1();
-			} catch (IOException e1) {
+			} 
+			catch (IOException e1) 
+			{
 				e1.printStackTrace();
 			}
 		});
@@ -201,9 +204,8 @@ public class Indexer
 		long time = System.nanoTime() - start;
 		System.out.println(time);
 
-		
-//		for (String key:map.keySet())
-//			System.out.println(key + ":" +(map.get(key).toString()));
+		// for (String key:map.keySet())
+		//	System.out.println(key + ":" +(map.get(key).toString()));
 	}
 }
 
