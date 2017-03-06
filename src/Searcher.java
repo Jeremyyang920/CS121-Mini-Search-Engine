@@ -71,8 +71,8 @@ public class Searcher
         String command;
         while (true)
         {
-        	System.out.print("Enter Query: ");
-        	command = query.nextLine();
+        	System.out.print("\nEnter Query: ");
+        	command = query.nextLine().toLowerCase();
         	if (command.equals("!quit"))
         	{
         		System.out.println("Program terminated.");

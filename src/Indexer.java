@@ -98,11 +98,12 @@ public class Indexer
 			    	String[] tokens = fileDoc.text().split(" ");
 			    	for (String token: tokens)
 			    	{
+			    		token = token.toLowerCase();
 			    		if (stopWords.contains(token))
 			        	{
 			        		continue;
 			        	}
-			    		String prefix=file.toString().substring(24);
+			    		String prefix = file.toString().substring(24);
 			        	addElement(map,token,prefix);
 			    	}
 			    	
