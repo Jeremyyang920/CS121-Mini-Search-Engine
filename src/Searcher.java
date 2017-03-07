@@ -35,8 +35,8 @@ public class Searcher
 		try
 		{
 			/* CHANGE BASED ON COMPUTER */
-			// Object o = parser.parse(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
-			Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
+			Object o = parser.parse(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
+			//Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
 			JSONObject json = (JSONObject) o;
 			return json;
 		}
@@ -59,8 +59,8 @@ public class Searcher
 	public static void main(String[] args) throws IOException, ClassNotFoundException 
 	{
 		/* CHANGE BASED ON COMPUTER */
-		// FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
-		FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		//FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
 		
 		ObjectInputStream in = new ObjectInputStream(fileIn);
         everything = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
@@ -99,7 +99,9 @@ public class Searcher
         	for (String s: result)
         	{
         		s = s.replace("\\", "/");
-        		String link = (String) js.get(s.substring(16));
+        		//System.out.println(js.get(s));
+        		//String link = (String) js.get(s.substring(16));
+        		String link=(String) js.get(s);
         		if (!uniqueLinks.containsKey(link))
         		{
         			uniqueLinks.put(link, 0);

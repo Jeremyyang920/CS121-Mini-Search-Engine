@@ -98,12 +98,11 @@ public class Indexer
 			    	String[] tokens = fileDoc.text().split(" ");
 			    	for (String token: tokens)
 			    	{
-			    		token = token.toLowerCase();
 			    		if (stopWords.contains(token))
 			        	{
 			        		continue;
 			        	}
-			    		String prefix = file.toString().substring(24);
+			    		String prefix=file.toString().substring(24);
 			        	addElement(map,token,prefix);
 			    	}
 			    	
@@ -163,8 +162,8 @@ public class Indexer
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
 	{
-		InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
-	    // InputStream fis = new FileInputStream(new File("StopWords.txt"));
+		//InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
 	    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
 	    String line;
@@ -173,8 +172,8 @@ public class Indexer
 	    br.close();
 	    
 	    /* CHANGE BASED ON COMPUTER */
-		// splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
-		splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
+		splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
+		//splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		
 		listofFiles = allFiles.toArray(listofFiles);
 		long start = System.nanoTime();
