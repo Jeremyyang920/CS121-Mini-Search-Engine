@@ -1,14 +1,18 @@
+// Authors: Jeremy Yang, Anuj Shah, Jack Murray
+// Assignment 3: Search Engine
+// File: JsoupTest.java
+
 import java.io.File;
 import java.io.IOException;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-public class JsoupTest {
-
-	public static void main(String[] args) throws IOException {
-		File file= new File("D:\\Desktop\\WEBPAGES_RAW\\0\\14");
+public class JsoupTest 
+{
+	public static void main(String[] args) throws IOException 
+	{
+		File file = new File("D:\\Desktop\\WEBPAGES_RAW\\0\\14");
 		Document fileDoc = Jsoup.parse(file, "UTF-8");
 		
     	Elements title = fileDoc.getElementsByTag("title");
@@ -17,10 +21,9 @@ public class JsoupTest {
     	Elements h3 = fileDoc.getElementsByTag("h3");
     	Elements bold = fileDoc.getElementsByTag("b");
 		
-    	
     	String[] tokens = fileDoc.text().split(" ");
-    	for(String t:tokens)
+    	for(String t: tokens)
     		System.out.println(t);
 	}
-
 }
+
