@@ -89,11 +89,11 @@ public class Indexer
 				{
 					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
 					
-			    	Elements title = fileDoc.getElementsByTag("title");
-			    	Elements h1 = fileDoc.getElementsByTag("h1");
-			    	Elements h2 = fileDoc.getElementsByTag("h2");
-			    	Elements h3 = fileDoc.getElementsByTag("h3");
-			    	Elements bold = fileDoc.getElementsByTag("b");
+//			    	Elements title = fileDoc.getElementsByTag("title");
+//			    	Elements h1 = fileDoc.getElementsByTag("h1");
+//			    	Elements h2 = fileDoc.getElementsByTag("h2");
+//			    	Elements h3 = fileDoc.getElementsByTag("h3");
+//			    	Elements bold = fileDoc.getElementsByTag("b");
 					
 			    	String[] tokens = fileDoc.text().split(" ");
 			    	for (String token: tokens)
@@ -103,6 +103,7 @@ public class Indexer
 			        		continue;
 			        	}
 			    		String prefix=file.toString().substring(24);
+			    		//System.out.println(prefix);
 			        	addElement(map,token,prefix);
 			    	}
 			    	
@@ -128,6 +129,7 @@ public class Indexer
 					        		continue;
 					        	}
 					        	String prefix=file.toString().substring(24);
+					    		//System.out.println(prefix);
 
 					        	addElement(map,word,prefix);
 					        }
@@ -204,8 +206,6 @@ public class Indexer
 		long time = System.nanoTime() - start;
 		System.out.println(time);
 
-		// for (String key:map.keySet())
-		//	System.out.println(key + ":" +(map.get(key).toString()));
 	}
 }
 

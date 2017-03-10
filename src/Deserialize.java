@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -34,7 +35,24 @@ public class Deserialize
 		         
 		         ObjectInputStream in = new ObjectInputStream(fileIn);
 		         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
-		         everything.putAll(map);
+		         for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : map.entrySet())
+		         {
+		        	
+					if(! everything.containsKey(entry.getKey()))
+					{
+		        		 everything.put(entry.getKey(), entry.getValue());
+					}
+		        	else
+		        	{
+		        		 ConcurrentLinkedQueue<String> old= everything.get(entry.getKey());
+		        		 old.addAll(entry.getValue());
+		        		 everything.put(entry.getKey(), old);
+		        		 
+		        	}
+		        	 
+		        			 
+		         }
+		         //everything.putAll(map);
 
 		         // for (String a: map.keySet())
 		         // {
