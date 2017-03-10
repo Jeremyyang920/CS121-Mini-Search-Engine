@@ -24,6 +24,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class Indexer 
 {
@@ -94,40 +96,30 @@ public class Indexer
 			for (Path file: stream)
 			{
 				Document fileDoc;
-				
 				try // Try to read the file as a HTML file.
 				{
 					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
 					
-			    	// Elements title = fileDoc.getElementsByTag("title");
-			    	// Elements h1 = fileDoc.getElementsByTag("h1");
-			    	// Elements h2 = fileDoc.getElementsByTag("h2");
-			    	// Elements h3 = fileDoc.getElementsByTag("h3");
-			    	// Elements bold = fileDoc.getElementsByTag("b");
+//			    	Elements title = fileDoc.getElementsByTag("title");
+//			    	Elements h1 = fileDoc.getElementsByTag("h1");
+//			    	Elements h2 = fileDoc.getElementsByTag("h2");
+//			    	Elements h3 = fileDoc.getElementsByTag("h3");
+//			    	Elements bold = fileDoc.getElementsByTag("b");
 					
 			    	String[] tokens = fileDoc.text().split(" ");
 			    	for (String token: tokens)
 			    	{
-<<<<<<< HEAD
 			    		token = token.toLowerCase();
 			    		if (stopWords.contains(token))
 			        	{
 			        		continue;
 			        	}
-			    		String prefix=file.toString().substring(24);
+			    		String prefix=file.toString().substring(37);
 			    		//System.out.println(prefix);
 			        	addElement(map,token,prefix);
-=======
-			    		if (stopWords.contains(token) || token.equals(""))
-			        	{
-			        		continue;
-			        	}
-			    		String prefix = file.toString().substring(24);
-			    		token = token.toLowerCase();
-			    		// System.out.println(prefix);
-			        	addElement(map,token.replaceAll("[^A-Za-z.-]",""),prefix);
->>>>>>> origin/master
 			    	}
+			    	
+	
 				}
 				catch (Exception e) // If reading HTML fails, read it as a TXT file.
 				{
@@ -149,17 +141,12 @@ public class Indexer
 					        	{
 					        		continue;
 					        	}
-<<<<<<< HEAD
-					        	String prefix=file.toString().substring(24);
+					        	//change the substring based on your own path
+					        	// use 24 for jeremy's desktop
+					        	String prefix=file.toString().substring(37);
 					    		//System.out.println(prefix);
 
 					        	addElement(map,word,prefix);
-=======
-					        	String prefix = file.toString().substring(24);
-					        	word = word.toLowerCase();
-					    		// System.out.println(prefix);
-					        	addElement(map,word.replaceAll("[^A-Za-z.-]",""),prefix);
->>>>>>> origin/master
 					        }
 					    }
 					}
@@ -174,27 +161,26 @@ public class Indexer
     
 	static synchronized void outWrite(ConcurrentHashMap<String,ConcurrentLinkedQueue<String>> map,String dir) throws IOException
 	{
-		try 
-		{
-			FileOutputStream fileOut = new FileOutputStream(dir+".ser");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(map);
-			out.close();
-			fileOut.close();
-		    System.out.printf("Serialized data is saved. ");
-		}
-		catch (IOException i) 
-		{
-			i.printStackTrace();
-		}
+		  try 
+		  {
+		         FileOutputStream fileOut = new FileOutputStream(dir+".ser");
+		         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		         out.writeObject(map);
+		         out.close();
+		         fileOut.close();
+		         System.out.printf("Serialized data is saved.");
+		  }
+		  catch (IOException i) 
+		  {
+		      i.printStackTrace();
+		  }
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
 	{
-		/* CHANGE BASED ON COMPUTER */
-	    // InputStream fis = new FileInputStream(new File("StopWords.txt"));
-	    InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
-	    
+		//InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
 	    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
 	    String line;
@@ -203,8 +189,11 @@ public class Indexer
 	    br.close();
 	    
 	    /* CHANGE BASED ON COMPUTER */
-		// splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
-		splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
+	    //jeremy's desktop
+		//splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
+	    //jeremy's laptop
+	    splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
+		//splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		
 		listofFiles = allFiles.toArray(listofFiles);
 		long start = System.nanoTime();
@@ -258,6 +247,6 @@ public class Indexer
 		service2.awaitTermination(1, TimeUnit.HOURS);
 		long time = System.nanoTime() - start;
 		System.out.println(time);
+
 	}
 }
-
