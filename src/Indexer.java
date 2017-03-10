@@ -65,13 +65,24 @@ public class Indexer
     	  
     static void i1() throws IOException 
     {
-		File[] files = Arrays.copyOfRange(listofFiles,0,37);
+		File[] files = Arrays.copyOfRange(listofFiles,0,18);
 		performIndex(files);
     }
     
     static void i2() throws IOException 
     {   
-		File[] files = Arrays.copyOfRange(listofFiles,37,75);
+		File[] files = Arrays.copyOfRange(listofFiles,18,36);
+		performIndex(files);
+    }
+    static void i3() throws IOException 
+    {   
+		File[] files = Arrays.copyOfRange(listofFiles,36,54);
+		performIndex(files);
+    }
+    
+    static void i4() throws IOException 
+    {   
+		File[] files = Arrays.copyOfRange(listofFiles,54,75);
 		performIndex(files);
     }
     
@@ -98,13 +109,14 @@ public class Indexer
 			    	String[] tokens = fileDoc.text().split(" ");
 			    	for (String token: tokens)
 			    	{
+			    		token = token.toLowerCase();
 			    		if (stopWords.contains(token))
 			        	{
 			        		continue;
 			        	}
 			    		String prefix=file.toString().substring(24);
 			    		//System.out.println(prefix);
-			        	addElement(map,token.replaceAll("[^A-Za-z.-]", ""),prefix);
+			        	addElement(map,token,prefix);
 			    	}
 			    	
 	
@@ -124,6 +136,7 @@ public class Indexer
 					        String[] words = line.split(" ");
 					        for(String word: words)
 					        {
+					        	word=word.toLowerCase();
 					        	if (stopWords.contains(word) || word.equals(""))
 					        	{
 					        		continue;
@@ -131,7 +144,7 @@ public class Indexer
 					        	String prefix=file.toString().substring(24);
 					    		//System.out.println(prefix);
 
-					        	addElement(map,word.replaceAll("[^A-Za-z.-]", ""),prefix);
+					        	addElement(map,word,prefix);
 					        }
 					    }
 					}
@@ -181,6 +194,8 @@ public class Indexer
 		long start = System.nanoTime();
 
 		ExecutorService service = Executors.newFixedThreadPool(2);
+		ExecutorService service2 = Executors.newFixedThreadPool(2);
+
 		service.submit(() -> {
 			try 
 			{
@@ -201,8 +216,30 @@ public class Indexer
 				e.printStackTrace();
 			}
 		});
+		service2.submit(() -> {
+			try 
+			{
+				i3();
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		});
+		service2.submit(() -> {
+			try 
+			{
+				i4();
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		});
 		service.shutdown();
+		service2.shutdown();
 		service.awaitTermination(1, TimeUnit.HOURS);
+		service2.awaitTermination(1, TimeUnit.HOURS);
 		long time = System.nanoTime() - start;
 		System.out.println(time);
 
