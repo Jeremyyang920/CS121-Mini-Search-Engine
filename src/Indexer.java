@@ -104,7 +104,7 @@ public class Indexer
 			        	}
 			    		String prefix=file.toString().substring(24);
 			    		//System.out.println(prefix);
-			        	addElement(map,token,prefix);
+			        	addElement(map,token.replaceAll("[^A-Za-z.-]", ""),prefix);
 			    	}
 			    	
 	
@@ -131,7 +131,7 @@ public class Indexer
 					        	String prefix=file.toString().substring(24);
 					    		//System.out.println(prefix);
 
-					        	addElement(map,word,prefix);
+					        	addElement(map,word.replaceAll("[^A-Za-z.-]", ""),prefix);
 					        }
 					    }
 					}
