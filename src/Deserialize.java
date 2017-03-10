@@ -7,22 +7,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Deserialize 
 {
-	private static HashSet<String> uniqueWords = new HashSet<String>();
+	// private static HashSet<String> uniqueWords = new HashSet<String>();
 	private static ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> everything = new ConcurrentHashMap<String,ConcurrentLinkedQueue<String>>();
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws ClassNotFoundException
 	{
 		// String s = "";
-		
 		long time = System.currentTimeMillis();
+		
 		for (int i = 0; i < 75; i++)
 		{
 			try 
@@ -30,29 +29,26 @@ public class Deserialize
 				 ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map;
 				 
 				 /* CHANGE BASED ON COMPUTER */
-		         FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
-		         //FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         // FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
 		         
 		         ObjectInputStream in = new ObjectInputStream(fileIn);
 		         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
 		         for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : map.entrySet())
 		         {
-		        	
-					if(! everything.containsKey(entry.getKey()))
+					if(!everything.containsKey(entry.getKey()))
 					{
-		        		 everything.put(entry.getKey(), entry.getValue());
+						everything.put(entry.getKey(),entry.getValue());
 					}
 		        	else
 		        	{
-		        		 ConcurrentLinkedQueue<String> old= everything.get(entry.getKey());
-		        		 old.addAll(entry.getValue());
-		        		 everything.put(entry.getKey(), old);
-		        		 
-		        	}
-		        	 
-		        			 
+		        		ConcurrentLinkedQueue<String> old = everything.get(entry.getKey());
+		        		old.addAll(entry.getValue());
+		        		everything.put(entry.getKey(),old); 
+		        	}		 
 		         }
-		         //everything.putAll(map);
+		         
+		         // everything.putAll(map);
 
 		         // for (String a: map.keySet())
 		         // {
@@ -78,8 +74,8 @@ public class Deserialize
 		try 
 		{
 			/* CHANGE BASED ON COMPUTER */
-			FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
-			//FileOutputStream fileOut = new FileOutputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			// FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			FileOutputStream fileOut = new FileOutputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
 			
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		    out.writeObject(everything);
@@ -92,7 +88,7 @@ public class Deserialize
 			 i.printStackTrace();
 		 }
 		
-		//System.out.println(uniqueWords.size());
+		// System.out.println(uniqueWords.size());
 		
 		// BufferedWriter writer = null;
         // try 
