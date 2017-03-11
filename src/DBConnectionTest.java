@@ -2,14 +2,25 @@
 // Assignment 3: Search Engine
 // File: DBConnectionTest.java
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import com.mysql.jdbc.Connection;
 
 public class DBConnectionTest 
 {
-	public static void main(String[] args) throws SQLException 
+	private static ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> everything = new ConcurrentHashMap<String,ConcurrentLinkedQueue<String>>(); // complete index
+
+	@SuppressWarnings("unchecked")
+	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException 
 	{
 		String connectionUrl = "jdbc:mysql://cs121.cyalk9gzt8mx.us-west-1.rds.amazonaws.com:3306/Indexer";
 	    String dbUser = "Jeremy";
@@ -19,28 +30,32 @@ public class DBConnectionTest
 	    try 
 	    {
 	    	conn = (Connection) DriverManager.getConnection(connectionUrl, dbUser, dbPwd);
-	        System.out.println("conn Available");
-		    java.sql.Statement statement = conn.createStatement();
-				
-		    statement.executeUpdate("INSERT INTO Tokens " + "VALUES ('hello','0/121')");
-		    String sql = "SELECT * FROM Tokens";
-				
-		    ResultSet rs = statement.executeQuery(sql);
-			while(rs.next())
-			{
-				String first = rs.getString("token");
-			    String last = rs.getString("document");
-   
-			    System.out.println("First: " + first);
-			    System.out.println("Last: " + last);
-			}
-			rs.close();
+	        System.out.println("Connected");
+		    java.sql.PreparedStatement statement = conn.prepareStatement("INSERT INTO Tokens(token,document) VALUES (?,?)");
+			FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			
+	        everything = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
+	        
+	        for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : everything.entrySet())
+	        {
+	        	for(String p:entry.getValue())
+	        	{
+	        		if(!entry.getKey().equals(""))
+	        		{
+		        		statement.setString(1, entry.getKey());
+		        		statement.setString(2, p);
+		        		statement.executeUpdate();
+	        		}
+	        	}
+	        }
+	  
 		    conn.close();
 	     } 
 	     catch (SQLException e) 
 	     {
 	    	 e.printStackTrace();
-	         System.out.println("fetch otion error" + e.getLocalizedMessage());
+	         System.out.println("Insert Error" + e.getLocalizedMessage());
 	     }
 	}
 }

@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,11 +23,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.process.CoreLabelTokenFactory;
 public class Indexer 
 {
     public static File[] listofFiles = new File[74];
@@ -92,64 +95,30 @@ public class Indexer
 		{	
 			ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map = new ConcurrentHashMap<>();
 			DirectoryStream<Path> stream = Files.newDirectoryStream(f.toPath());
-			
+
 			for (Path file: stream)
 			{
-				Document fileDoc;
-				try // Try to read the file as a HTML file.
+				try
 				{
-					fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
-					
-//			    	Elements title = fileDoc.getElementsByTag("title");
-//			    	Elements h1 = fileDoc.getElementsByTag("h1");
-//			    	Elements h2 = fileDoc.getElementsByTag("h2");
-//			    	Elements h3 = fileDoc.getElementsByTag("h3");
-//			    	Elements bold = fileDoc.getElementsByTag("b");
-					
-			    	String[] tokens = fileDoc.text().split(" ");
-			    	for (String token: tokens)
-			    	{
-			    		token = token.toLowerCase();
-			    		if (stopWords.contains(token))
-			        	{
-			        		continue;
-			        	}
-			    		String prefix=file.toString().substring(37);
-			    		//System.out.println(prefix);
-			        	addElement(map,token,prefix);
-			    	}
-			    	
-	
+		    		String prefix=file.toString().substring(24);
+					PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<CoreLabel>(new FileReader(file.toString()),
+				              new CoreLabelTokenFactory(), "untokenizable=noneDelete,normalizeParentheses=false");
+					while (ptbt.hasNext()) 
+				    {
+				        String label = ptbt.next().originalText();
+				        if (! Pattern.matches("^\\<?\\!?\\/?[a-zA-Z][a-zA-Z0-9]*[^<>]*>|<!--.*?-->",label))
+				        {
+				        	if (stopWords.contains(label)|| label.equals("``"))
+				        	{
+				        		continue;
+				        	}
+				        	addElement(map,label.replace("[^A-Za-z0-9]", ""),prefix);
+				        }	
+				    }
 				}
-				catch (Exception e) // If reading HTML fails, read it as a TXT file.
+				catch(Exception e)
 				{
-					String line;
-					try 
-					(
-					    InputStream fis = new FileInputStream(file.toFile());
-					    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-					    BufferedReader br = new BufferedReader(isr);
-					) 
-					{
-					    while ((line = br.readLine()) != null) 
-					    {
-					        String[] words = line.split(" ");
-					        for(String word: words)
-					        {
-					        	word=word.toLowerCase();
-					        	if (stopWords.contains(word) || word.equals(""))
-					        	{
-					        		continue;
-					        	}
-					        	//change the substring based on your own path
-					        	// use 24 for jeremy's desktop
-					        	String prefix=file.toString().substring(37);
-					    		//System.out.println(prefix);
-
-					        	addElement(map,word,prefix);
-					        }
-					    }
-					}
+					System.out.println(e.getMessage());
 				}
 			}
 			outWrite(map,f.getAbsolutePath());
@@ -168,7 +137,7 @@ public class Indexer
 		         out.writeObject(map);
 		         out.close();
 		         fileOut.close();
-		         System.out.printf("Serialized data is saved.");
+		         System.out.printf("Serialized data is saved: ");
 		  }
 		  catch (IOException i) 
 		  {
@@ -190,9 +159,9 @@ public class Indexer
 	    
 	    /* CHANGE BASED ON COMPUTER */
 	    //jeremy's desktop
-		//splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
+		splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
 	    //jeremy's laptop
-	    splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
+	    //splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
 		//splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		
 		listofFiles = allFiles.toArray(listofFiles);

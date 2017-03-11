@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="D:/Downloads/jsoup-1.10.2.jar"/>
 	<classpathentry kind="lib" path="D:/Downloads/json-simple.jar"/>
 	<classpathentry kind="lib" path="D:/Downloads/mysql-connector-java-5.1.41-bin.jar"/>
+	<classpathentry kind="lib" path="D:/Downloads/stanford-corenlp-3.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/Downloads/stanford-parser-3.7.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
