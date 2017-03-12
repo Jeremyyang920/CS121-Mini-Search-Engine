@@ -22,16 +22,16 @@ public class DBConnectionTest
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException 
 	{
-		String connectionUrl = "jdbc:mysql://cs121.cyalk9gzt8mx.us-west-1.rds.amazonaws.com:3306/Indexer";
-	    String dbUser = "Jeremy";
-	    String dbPwd = "cs121final";
+		String connectionUrl = "jdbc:mysql://127.0.0.1:3306/cs121";
+	    String dbUser = "jeremy";
+	    String dbPwd = "";
 	    Connection conn = null;
 
 	    try 
 	    {
 	    	conn = (Connection) DriverManager.getConnection(connectionUrl, dbUser, dbPwd);
 	        System.out.println("Connected");
-		    java.sql.PreparedStatement statement = conn.prepareStatement("INSERT INTO Tokens(token,document) VALUES (?,?)");
+		    java.sql.PreparedStatement statement = conn.prepareStatement("INSERT INTO tokens(token,document) VALUES (?,?)");
 			FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			
@@ -39,15 +39,14 @@ public class DBConnectionTest
 	        
 	        for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : everything.entrySet())
 	        {
-	        	for(String p:entry.getValue())
-	        	{
+	        	
 	        		if(!entry.getKey().equals(""))
 	        		{
 		        		statement.setString(1, entry.getKey());
-		        		statement.setString(2, p);
+		        		statement.setString(2, entry.getValue().toString());
 		        		statement.executeUpdate();
 	        		}
-	        	}
+	        	
 	        }
 	  
 		    conn.close();

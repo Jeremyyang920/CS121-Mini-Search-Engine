@@ -106,7 +106,8 @@ public class Indexer
 					while (ptbt.hasNext()) 
 				    {
 				        String label = ptbt.next().originalText();
-				        if (! Pattern.matches("^\\<?\\!?\\/?[a-zA-Z][a-zA-Z0-9]*[^<>]*>|<!--.*?-->",label))
+				        if (! Pattern.matches("^\\<?\\!?\\/?[a-zA-Z][a-zA-Z0-9]*[^<>]*>|<!--.*?-->",label) && 
+				        		 Pattern.matches("^[a-zA-Z0-9,.;:_'\\s-]+$", label))
 				        {
 				        	if (stopWords.contains(label)|| label.equals("``"))
 				        	{
