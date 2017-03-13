@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import edu.stanford.nlp.process.PTBTokenizer;
@@ -100,24 +99,25 @@ public class Indexer
 			{
 				try
 				{
-		    		String prefix=file.toString().substring(24);
-					PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<CoreLabel>(new FileReader(file.toString()),
-				              new CoreLabelTokenFactory(), "untokenizable=noneDelete,normalizeParentheses=false");
+					/* CHANGE BASED ON COMPUTER */
+		    		// String prefix = file.toString().substring(24);
+		    		String prefix = file.toString().substring(40);
+		    		
+					PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<CoreLabel>(new FileReader(file.toString()),new CoreLabelTokenFactory(),"untokenizable=noneDelete,normalizeParentheses=false");
 					while (ptbt.hasNext()) 
 				    {
-				        String label = ptbt.next().originalText();
-				        if (! Pattern.matches("^\\<?\\!?\\/?[a-zA-Z][a-zA-Z0-9]*[^<>]*>|<!--.*?-->",label) && 
-				        		 Pattern.matches("^[a-zA-Z0-9,.;:_'\\s-]+$", label))
+				        String label = ptbt.next().originalText().toLowerCase();
+				        if (!Pattern.matches("^\\<?\\!?\\/?[a-zA-Z][a-zA-Z0-9]*[^<>]*>|<!--.*?-->",label) && Pattern.matches("^[a-zA-Z0-9,.;:_'\\s-]+$",label))
 				        {
-				        	if (stopWords.contains(label)|| label.equals("``"))
+				        	if (stopWords.contains(label) || label.equals("``"))
 				        	{
 				        		continue;
 				        	}
-				        	addElement(map,label.replace("[^A-Za-z0-9]", ""),prefix);
+				        	addElement(map,label.replace("[^A-Za-z0-9]",""),prefix);
 				        }	
 				    }
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					System.out.println(e.getMessage());
 				}
@@ -131,27 +131,28 @@ public class Indexer
     
 	static synchronized void outWrite(ConcurrentHashMap<String,ConcurrentLinkedQueue<String>> map,String dir) throws IOException
 	{
-		  try 
-		  {
-		         FileOutputStream fileOut = new FileOutputStream(dir+".ser");
-		         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		         out.writeObject(map);
-		         out.close();
-		         fileOut.close();
-		         System.out.printf("Serialized data is saved: ");
-		  }
-		  catch (IOException i) 
-		  {
-		      i.printStackTrace();
-		  }
+		try 
+		{
+			FileOutputStream fileOut = new FileOutputStream(dir+".ser");
+		    ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		    out.writeObject(map);
+		    out.close();
+		    fileOut.close();
+		    System.out.printf("Serialized data is saved: ");
+		}
+		catch (IOException i) 
+		{
+			i.printStackTrace();
+		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
 	{
-		//InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
-	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
-	    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+		/* CHANGE BASED ON COMPUTER */
+	    // InputStream fis = new FileInputStream(new File("StopWords.txt"));
+	    InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    
+	    InputStreamReader isr = new InputStreamReader(fis,Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
 	    String line;
 	    while ((line = br.readLine()) != null)
@@ -159,11 +160,9 @@ public class Indexer
 	    br.close();
 	    
 	    /* CHANGE BASED ON COMPUTER */
-	    //jeremy's desktop
-		splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
-	    //jeremy's laptop
-	    //splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
-		//splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
+		// splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
+	    // splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
+		splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		
 		listofFiles = allFiles.toArray(listofFiles);
 		long start = System.nanoTime();
@@ -213,10 +212,10 @@ public class Indexer
 		});
 		service.shutdown();
 		service2.shutdown();
-		service.awaitTermination(1, TimeUnit.HOURS);
-		service2.awaitTermination(1, TimeUnit.HOURS);
+		service.awaitTermination(1,TimeUnit.HOURS);
+		service2.awaitTermination(1,TimeUnit.HOURS);
 		long time = System.nanoTime() - start;
 		System.out.println(time);
-
 	}
 }
+

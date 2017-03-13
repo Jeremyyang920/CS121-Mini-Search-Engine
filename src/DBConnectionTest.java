@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import com.mysql.jdbc.Connection;
 
 public class DBConnectionTest 
@@ -25,30 +24,31 @@ public class DBConnectionTest
 		String connectionUrl = "jdbc:mysql://127.0.0.1:3306/cs121";
 	    String dbUser = "jeremy";
 	    String dbPwd = "";
-	    Connection conn = null;
+		Connection conn = null;
 
 	    try 
 	    {
 	    	conn = (Connection) DriverManager.getConnection(connectionUrl, dbUser, dbPwd);
 	        System.out.println("Connected");
 		    java.sql.PreparedStatement statement = conn.prepareStatement("INSERT INTO tokens(token,document) VALUES (?,?)");
-			FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
-			ObjectInputStream in = new ObjectInputStream(fileIn);
+			
+		    /* CHANGE BASED ON COMPUTER */
+		    // FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		    
+		    ObjectInputStream in = new ObjectInputStream(fileIn);
 			
 	        everything = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
 	        
-	        for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : everything.entrySet())
+	        for (Map.Entry<String, ConcurrentLinkedQueue<String>> entry: everything.entrySet())
 	        {
-	        	
-	        		if(!entry.getKey().equals(""))
-	        		{
-		        		statement.setString(1, entry.getKey());
-		        		statement.setString(2, entry.getValue().toString());
-		        		statement.executeUpdate();
-	        		}
-	        	
+	        	if(!entry.getKey().equals(""))
+	        	{
+	        		statement.setString(1, entry.getKey());
+	        		statement.setString(2, entry.getValue().toString());
+	        		statement.executeUpdate();
+	        	}
 	        }
-	  
 		    conn.close();
 	     } 
 	     catch (SQLException e) 
@@ -58,3 +58,4 @@ public class DBConnectionTest
 	     }
 	}
 }
+

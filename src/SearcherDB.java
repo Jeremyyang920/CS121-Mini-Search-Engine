@@ -1,12 +1,9 @@
-// Authors: Jeremy Yang, Anuj Shah, Jack Murray
-// Assignment 3: Search Engine
-// File: Searcher.java
-
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,20 +11,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class Searcher 
+import com.mysql.jdbc.Connection;
+
+public class SearcherDB 
 {
 	private static final int DOC_COUNT = 37497; // number of documents
-	private static ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> everything = new ConcurrentHashMap<String,ConcurrentLinkedQueue<String>>(); // complete index
+	private static Connection conn; // connection to local database
 	private static HashMap<String,Integer> uniqueLinks = new HashMap<String,Integer>(); // map where key = document's link and value = number of hits
 	private static JSONObject js = getJSON(); // reads bookkeeping.json which contains all document/link pairs
 	
-	public static JSONObject getJSON()
+	public static JSONObject getJSON() 
 	{
 		JSONParser parser = new JSONParser();
 		
@@ -56,13 +54,17 @@ public class Searcher
 		return null;
 	}
 	
-	public static double tfScore(String term, String docLink)
+	public static double tfScore(String term, String docLink) throws SQLException
 	{
-		if (!everything.containsKey(term) || everything.get(term).size() == 0)
+		java.sql.Statement statement = conn.createStatement();
+		String sql = "SELECT document FROM Tokens WHERE token = '" + term + "'";
+		ResultSet rs = statement.executeQuery(sql);
+		if (!rs.next())
 			return 0.0;
 		
 		int count = 0;
-		for (String doc: everything.get(term))
+		String r = rs.getString("document");
+		for (String doc: r.substring(1,r.length()-1).split(", "))
 		{
 			doc = doc.replace("\\", "/");
 			
@@ -80,16 +82,20 @@ public class Searcher
 		return 1.0 + Math.log(count);
 	}
 	
-	public static double idfScore(String term)
+	public static double idfScore(String term) throws SQLException
 	{
 		int N = DOC_COUNT;
-		if (!everything.containsKey(term))
+		java.sql.Statement statement = conn.createStatement();
+		String sql = "SELECT document FROM Tokens WHERE token = '" + term + "'";
+		ResultSet rs = statement.executeQuery(sql);
+		if (!rs.next())
 			return 0.0;
-		int numDocs = everything.get(term).size();
+		String r = rs.getString("document");
+		int numDocs = r.substring(1,r.length()-1).split(", ").length;
 		return 1.0 + Math.log(N/numDocs);
 	}
 	
-	public static double tfidfScore(String[] terms, String link)
+	public static double tfidfScore(String[] terms, String link) throws SQLException
 	{
 		double total = 0.0;
 		for (String term: terms)
@@ -99,23 +105,35 @@ public class Searcher
 		return total;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args) throws IOException, ClassNotFoundException 
+	public static void main(String[] args) throws SQLException 
 	{
-		/* CHANGE BASED ON COMPUTER */
-		// FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
-		// FileInputStream fileIn = new FileInputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\everything.ser");
-		FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		String connectionUrl = "jdbc:mysql://127.0.0.1:3306/cs121";
+		Scanner db = new Scanner(System.in);
+	    // String dbUser = "jeremy";
+		System.out.print("Username: ");
+		String dbUser = db.nextLine();
+	    // String dbPwd = "";
+		System.out.print("Password: ");
+	    String dbPwd = db.nextLine();
+		conn = null;
 		
-		ObjectInputStream in = new ObjectInputStream(fileIn);
-        everything = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
-        
-        Scanner query = new Scanner(System.in);
+		try 
+		{
+			conn = (Connection) DriverManager.getConnection(connectionUrl, dbUser, dbPwd);
+			System.out.println("Connected");
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		Scanner query = new Scanner(System.in);
         String command;
-        
+ 
         while (true)
         {
         	System.out.print("\nEnter Query: ");
+        	
         	command = query.nextLine().toLowerCase();
         	
         	// Quit Program
@@ -130,15 +148,49 @@ public class Searcher
         	
         	if (words.length == 1)
         	{
-        		if (everything.get(words[0]) != null)
-        			result.addAll(everything.get(words[0]));
+        		try 
+        		{
+					java.sql.Statement statement = conn.createStatement();
+					String sql = "SELECT document FROM Tokens WHERE token = '" + words[0] + "'";
+					ResultSet rs = statement.executeQuery(sql);
+					while (rs.next())
+					{
+						String r = rs.getString("document");
+						String[] rColl = (r.substring(1,r.length()-1)).split(", ");
+						for (String s: rColl)
+						{
+							result.add(s);
+						}
+					}
+				} 
+        		catch (SQLException e) 
+        		{
+					e.printStackTrace();
+				}
         	}
         	else if (words.length > 1)
         	{
         		for (String word: words)
             	{
-        			if (everything.get(word) != null)
-        				result.addAll(everything.get(word));
+        			try 
+            		{
+    					java.sql.Statement statement = conn.createStatement();
+    					String sql = "SELECT document FROM Tokens WHERE token = '" + word + "'";
+    					ResultSet rs = statement.executeQuery(sql);
+    					if (rs.next())
+    					{
+    						String r = rs.getString("document");
+    						String[] rColl = (r.substring(1,r.length()-1)).split(", ");
+    						for (String s: rColl)
+    						{
+    							result.add(s);
+    						}
+    					}
+    				} 
+            		catch (SQLException e) 
+            		{
+    					e.printStackTrace();
+    				}
             	}
         	}
         	
@@ -169,8 +221,24 @@ public class Searcher
             	{
             		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2)
             	    {
-            			double total1 = tfScore(words[0], o1.getKey());
-                		double total2 = tfScore(words[0], o2.getKey());
+            			double total1 = 0.0;
+						try 
+						{
+							total1 = tfScore(words[0], o1.getKey());
+						} 
+						catch (SQLException e) 
+						{
+							e.printStackTrace();
+						}
+                		double total2 = 0.0;
+						try 
+						{
+							total2 = tfScore(words[0], o2.getKey());
+						} 
+						catch (SQLException e) 
+						{
+							e.printStackTrace();
+						}
                 		return -(new Double(total1)).compareTo(new Double(total2));
             	    }
             	});
@@ -181,8 +249,24 @@ public class Searcher
             	{
             		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2)
             	    {
-                		double total1 = tfidfScore(words, o1.getKey());
-                		double total2 = tfidfScore(words, o2.getKey());
+                		double total1 = 0.0;
+						try 
+						{
+							total1 = tfidfScore(words, o1.getKey());
+						} 
+						catch (SQLException e) 
+						{
+							e.printStackTrace();
+						}
+                		double total2 = 0.0;
+						try 
+						{
+							total2 = tfidfScore(words, o2.getKey());
+						} 
+						catch (SQLException e) 
+						{
+							e.printStackTrace();
+						}
                 		return -(new Double(total1)).compareTo(new Double(total2));
             	    }
             	});

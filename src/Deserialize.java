@@ -29,10 +29,9 @@ public class Deserialize
 				 ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map;
 				 
 				 /* CHANGE BASED ON COMPUTER */
-		         FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
-		         //FileInputStream fileIn = new FileInputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
-
-		        // FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         // FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         // FileInputStream fileIn = new FileInputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser"); 
+		         FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
 		         
 		         ObjectInputStream in = new ObjectInputStream(fileIn);
 		         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
@@ -76,9 +75,9 @@ public class Deserialize
 		try 
 		{
 			/* CHANGE BASED ON COMPUTER */
-			 FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
-			//FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\everything.ser");
-			//FileOutputStream fileOut = new FileOutputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			// FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			// FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			FileOutputStream fileOut = new FileOutputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
 			
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		    out.writeObject(everything);
