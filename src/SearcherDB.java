@@ -1,9 +1,20 @@
+// Authors: Jeremy Yang, Anuj Shah, Jack Murray
+// Assignment 3: Search Engine
+// File: SearcherDB.java
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,8 +33,10 @@ public class SearcherDB
 {
 	private static final int DOC_COUNT = 37497; // number of documents
 	private static Connection conn; // connection to local database
+	private static HashMap<String,ResultSet> sqlResults = new HashMap<String,ResultSet>();
 	private static HashMap<String,Integer> uniqueLinks = new HashMap<String,Integer>(); // map where key = document's link and value = number of hits
 	private static JSONObject js = getJSON(); // reads bookkeeping.json which contains all document/link pairs
+	public static ArrayList<String> stopWords = new ArrayList<String>(); // list of stop words
 	
 	public static JSONObject getJSON() 
 	{
@@ -56,9 +69,8 @@ public class SearcherDB
 	
 	public static double tfScore(String term, String docLink) throws SQLException
 	{
-		java.sql.Statement statement = conn.createStatement();
-		String sql = "SELECT document FROM Tokens WHERE token = '" + term + "'";
-		ResultSet rs = statement.executeQuery(sql);
+		ResultSet rs = sqlResults.get(term);
+		rs.beforeFirst();
 		if (!rs.next())
 			return 0.0;
 		
@@ -85,11 +97,11 @@ public class SearcherDB
 	public static double idfScore(String term) throws SQLException
 	{
 		int N = DOC_COUNT;
-		java.sql.Statement statement = conn.createStatement();
-		String sql = "SELECT document FROM Tokens WHERE token = '" + term + "'";
-		ResultSet rs = statement.executeQuery(sql);
+		ResultSet rs = sqlResults.get(term);
+		rs.beforeFirst();
 		if (!rs.next())
 			return 0.0;
+		
 		String r = rs.getString("document");
 		int numDocs = r.substring(1,r.length()-1).split(", ").length;
 		return 1.0 + Math.log(N/numDocs);
@@ -100,13 +112,25 @@ public class SearcherDB
 		double total = 0.0;
 		for (String term: terms)
 		{
-			total += tfScore(term,link) * idfScore(term); 
+			if (!stopWords.contains(term))
+				total += tfScore(term,link) * idfScore(term); 
 		}
 		return total;
 	}
 	
-	public static void main(String[] args) throws SQLException 
+	public static void main(String[] args) throws SQLException, IOException 
 	{
+		/* CHANGE BASED ON COMPUTER */
+	    // InputStream fis = new FileInputStream(new File("StopWords.txt"));
+	    InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    
+	    InputStreamReader isr = new InputStreamReader(fis,Charset.forName("UTF-8"));
+	    BufferedReader br = new BufferedReader(isr);
+	    String line;
+	    while ((line = br.readLine()) != null)
+	    	stopWords.add(line);
+	    br.close();
+		
 		String connectionUrl = "jdbc:mysql://127.0.0.1:3306/cs121";
 		Scanner db = new Scanner(System.in);
 	    // String dbUser = "jeremy";
@@ -148,35 +172,58 @@ public class SearcherDB
         	
         	if (words.length == 1)
         	{
-        		try 
+        		if (!stopWords.contains(words[0]))
         		{
-					java.sql.Statement statement = conn.createStatement();
-					String sql = "SELECT document FROM Tokens WHERE token = '" + words[0] + "'";
-					ResultSet rs = statement.executeQuery(sql);
-					while (rs.next())
-					{
-						String r = rs.getString("document");
-						String[] rColl = (r.substring(1,r.length()-1)).split(", ");
-						for (String s: rColl)
-						{
-							result.add(s);
-						}
-					}
-				} 
-        		catch (SQLException e) 
-        		{
-					e.printStackTrace();
-				}
+        			try 
+        			{
+        				ResultSet rs;
+        				if (sqlResults.containsKey(words[0]))
+        				{
+        					rs = sqlResults.get(words[0]);
+        				}
+        				else
+        				{
+        	        		java.sql.Statement statement = conn.createStatement();
+        					String sql = "SELECT document FROM Tokens WHERE token = '" + words[0] + "'";
+        					rs = statement.executeQuery(sql);
+        					sqlResults.put(words[0], rs);
+        				}
+        				while (rs.next())
+        				{
+        					String r = rs.getString("document");
+        					String[] rColl = (r.substring(1,r.length()-1)).split(", ");
+        					for (String s: rColl)
+        					{
+        						result.add(s);
+        					}
+        				}
+        			} 
+                	catch (SQLException e) 
+                	{
+        				e.printStackTrace();
+        			}
+                }
         	}
         	else if (words.length > 1)
         	{
         		for (String word: words)
             	{
+        			if (stopWords.contains(word))
+        				continue;
         			try 
             		{
-    					java.sql.Statement statement = conn.createStatement();
-    					String sql = "SELECT document FROM Tokens WHERE token = '" + word + "'";
-    					ResultSet rs = statement.executeQuery(sql);
+        				ResultSet rs;
+        				if (sqlResults.containsKey(word))
+        				{
+        					rs = sqlResults.get(word);
+        				}
+        				else
+        				{
+        					java.sql.Statement statement = conn.createStatement();
+        					String sql = "SELECT document FROM Tokens WHERE token = '" + word + "'";
+        					rs = statement.executeQuery(sql);
+        					sqlResults.put(word, rs);
+        				}
     					if (rs.next())
     					{
     						String r = rs.getString("document");
@@ -215,6 +262,7 @@ public class SearcherDB
         	}
         	
         	List<Map.Entry<String,Integer>> list = new LinkedList<Map.Entry<String, Integer>>(uniqueLinks.entrySet());
+        	
         	if (words.length == 1)
         	{
         		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>()

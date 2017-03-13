@@ -42,7 +42,7 @@ public class DBConnectionTest
 	        
 	        for (Map.Entry<String, ConcurrentLinkedQueue<String>> entry: everything.entrySet())
 	        {
-	        	if(!entry.getKey().equals(""))
+	        	if (!entry.getKey().equals(""))
 	        	{
 	        		statement.setString(1, entry.getKey());
 	        		statement.setString(2, entry.getValue().toString());
