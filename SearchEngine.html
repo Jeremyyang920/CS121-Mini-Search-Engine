@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CS 121: Search Engine</title>
+		<style>
+			a
+			{
+				text-decoration: none;
+				color: blue;
+			}
+			span
+			{
+				color: green;
+			}
+			font
+			{
+				color: red;
+			}
+		</style>
+	</head>
+	<body style = "background-color:#9494B8;">
+		<div id = ":">
+			<center><h1>CS 121: Information Retrieval</h1></center>
+			<br>
+			<center><h3>Anuj Shah, Jeremy Yang, Jack Murray</h3></center>
+			<br>
+			<form method = "get" id = "url" target = "_self">
+				<div style = "margin-top:20px;padding:10px;width:25em;">
+					<table border = "0" cellpadding = "0">
+						<tr>
+							<td>
+								<input
+									type = "text"
+									spellcheck = "false"
+									name = "q"
+									size = "200"
+									maxlength = "200"
+									id = "input"
+									placeholder = "Enter Query"/>
+							</td>
+							<td>
+								<input id = "submit" type = "submit" value = "Search"/>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</form>
+		</div>
+		<script src = "SearchEngine.js"></script>
+	</body>
+</html>

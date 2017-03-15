@@ -271,6 +271,8 @@ public class SearcherDB
             	{
             		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2)
             	    {
+            			return -(uniqueLinks.get(o1.getKey())).compareTo(uniqueLinks.get(o2.getKey()));
+            			/*
             			double total1 = 0.0;
 						try 
 						{
@@ -290,6 +292,7 @@ public class SearcherDB
 							e.printStackTrace();
 						}
                 		return -(new Double(total1)).compareTo(new Double(total2));
+                		*/
             	    }
             	});
         	}
