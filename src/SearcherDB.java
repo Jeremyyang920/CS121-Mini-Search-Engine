@@ -29,7 +29,7 @@ import org.json.simple.parser.ParseException;
 
 import com.mysql.jdbc.Connection;
 
-public class SearcherDB 
+public class SearcherDB
 {
 	private static final int DOC_COUNT = 37497; // number of documents
 	private static Connection conn; // connection to local database
@@ -180,6 +180,7 @@ public class SearcherDB
         				if (sqlResults.containsKey(words[0]))
         				{
         					rs = sqlResults.get(words[0]);
+        					rs.beforeFirst();
         				}
         				else
         				{
@@ -216,6 +217,7 @@ public class SearcherDB
         				if (sqlResults.containsKey(word))
         				{
         					rs = sqlResults.get(word);
+        					rs.beforeFirst();
         				}
         				else
         				{
