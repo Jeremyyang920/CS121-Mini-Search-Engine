@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.json.simple.JSONObject;
@@ -28,6 +31,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 public class SearcherDB
 {
@@ -37,6 +41,7 @@ public class SearcherDB
 	private static HashMap<String,Integer> uniqueLinks = new HashMap<String,Integer>(); // map where key = document's link and value = number of hits
 	private static JSONObject js = getJSON(); // reads bookkeeping.json which contains all document/link pairs
 	public static ArrayList<String> stopWords = new ArrayList<String>(); // list of stop words
+	private static PriorityQueue<MyEntry> pq = new PriorityQueue<MyEntry>();
 	
 	public static JSONObject getJSON() 
 	{
@@ -45,9 +50,9 @@ public class SearcherDB
 		try
 		{
 			/* CHANGE BASED ON COMPUTER */
-			// Object o = parser.parse(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
+			Object o = parser.parse(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
 			// Object o = parser.parse(new FileReader("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
-			Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
+			//Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
 			
 			JSONObject json = (JSONObject) o;
 			return json;
@@ -110,19 +115,54 @@ public class SearcherDB
 	public static double tfidfScore(String[] terms, String link) throws SQLException
 	{
 		double total = 0.0;
-		for (String term: terms)
+		int count=0;
+		try
 		{
-			if (!stopWords.contains(term))
-				total += tfScore(term,link) * idfScore(term); 
+			for (String term: terms)
+			{
+				if (!stopWords.contains(term))
+				{
+					Statement h1 = conn.createStatement();
+					Statement h2 = conn.createStatement();
+					Statement h3 = conn.createStatement();
+					Statement b = conn.createStatement();
+					String h1s="SELECT COUNT(*) FROM h1  where token = '"+ term +"' and document = '"+ link+"'";
+					String h2s="SELECT COUNT(*) FROM h2  where token ='"+ term +"' and document = '"+ link+"'";
+					String h3s="SELECT COUNT(*) FROM h3  where token ='"+ term +"' and document = '"+ link+"'";
+					String bs="SELECT COUNT(*) FROM b  where token ='"+ term +"' and document = '"+ link+"'";
+			
+					ResultSet h1r = h1.executeQuery(h1s);
+					ResultSet h2r =  h2.executeQuery(h2s);
+					ResultSet h3r =  h3.executeQuery(h3s);
+					ResultSet br =  b.executeQuery(bs);
+					h1r.next();
+					h2r.next();
+					h3r.next();
+					br.next();
+
+					int h1t=Integer.parseInt(h1r.getString(1));
+					int h2t=Integer.parseInt(h1r.getString(1));
+					int h3t=Integer.parseInt(h1r.getString(1));
+					int bt=Integer.parseInt(h1r.getString(1));
+					//System.out.println(h1t+ " "+ h2t+" "+ h3t+" "+bt);
+					total += tfScore(term,link) * idfScore(term)+(h1t*10+h2t*5+h3t*3+bt*1); 
+				}
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
 		}
 		return total;
+
+		
 	}
 	
 	public static void main(String[] args) throws SQLException, IOException 
 	{
 		/* CHANGE BASED ON COMPUTER */
-	    // InputStream fis = new FileInputStream(new File("StopWords.txt"));
-	    InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
+	    //InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
 	    
 	    InputStreamReader isr = new InputStreamReader(fis,Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
@@ -263,8 +303,9 @@ public class SearcherDB
         		uniqueLinks.put(link, uniqueLinks.get(link)+1);
         	}
         	
+        	int topN = 5;
         	List<Map.Entry<String,Integer>> list = new LinkedList<Map.Entry<String, Integer>>(uniqueLinks.entrySet());
-        	
+
         	if (words.length == 1)
         	{
         		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>()
@@ -272,71 +313,79 @@ public class SearcherDB
             		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2)
             	    {
             			return -(uniqueLinks.get(o1.getKey())).compareTo(uniqueLinks.get(o2.getKey()));
-            			/*
-            			double total1 = 0.0;
-						try 
-						{
-							total1 = tfScore(words[0], o1.getKey());
-						} 
-						catch (SQLException e) 
-						{
-							e.printStackTrace();
-						}
-                		double total2 = 0.0;
-						try 
-						{
-							total2 = tfScore(words[0], o2.getKey());
-						} 
-						catch (SQLException e) 
-						{
-							e.printStackTrace();
-						}
-                		return -(new Double(total1)).compareTo(new Double(total2));
-                		*/
+
             	    }
             	});
+        		
+        		for (int i = 0; i < list.size(); i++)
+        		{
+        			if (i == topN)
+        				break;
+        			System.out.println(list.get(i).getKey() + ": " + list.get(i).getValue() + " hit(s)");
+        		}
         	}
         	else if (words.length > 1)
         	{
-        		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>()
+        		try
+        		{
+            		for (String link: uniqueLinks.keySet())
+            		{
+//            			if(pq.size()>100)
+//            				break;
+            			pq.add(new MyEntry(link,tfidfScore(words,link)));
+            		}
+        		}
+        		catch (SQLException e)
+        		{
+        			e.printStackTrace();
+        		}
+        		
+            	int i = 0;
+            	while (!pq.isEmpty() && i < 5)
             	{
-            		public int compare(Map.Entry<String,Integer> o1, Map.Entry<String,Integer> o2)
-            	    {
-                		double total1 = 0.0;
-						try 
-						{
-							total1 = tfidfScore(words, o1.getKey());
-						} 
-						catch (SQLException e) 
-						{
-							e.printStackTrace();
-						}
-                		double total2 = 0.0;
-						try 
-						{
-							total2 = tfidfScore(words, o2.getKey());
-						} 
-						catch (SQLException e) 
-						{
-							e.printStackTrace();
-						}
-                		return -(new Double(total1)).compareTo(new Double(total2));
-            	    }
-            	});
-        	}
-        	
-        	int topN = 5;
-        	for (int i = 0; i < list.size(); i++)
-        	{
-        		if (i == topN)
-        			break;
-        		if (words.length == 1)
-        			System.out.println(list.get(i).getKey() + ": " + list.get(i).getValue() + " hit(s)");
-        		else if (words.length > 1)
-        			System.out.println(list.get(i).getKey() + ": " + tfidfScore(words, list.get(i).getKey()));
+            		if (i == topN)
+            			break;
+            		MyEntry value = pq.remove();
+            		System.out.println(value.getKey() + ": " + value.getValue());
+            		++i;
+            	}
         	}
         	uniqueLinks.clear();
         }
+	}
+}
+
+class MyEntry implements Entry<String, Double>, Comparable<MyEntry> 
+{
+    private final String key;
+    private Double value;
+    public MyEntry(final String key) 
+    {
+        this.key = key;
+    }
+    public MyEntry(final String key, final Double value) 
+    {
+        this.key = key;
+        this.value = value;
+    }
+    public String getKey() 
+    {
+        return key;
+    }
+    public Double getValue() 
+    {
+        return value;
+    }
+    public Double setValue(final Double value) 
+    {
+        final Double oldValue = this.value;
+        this.value = value;
+        return oldValue;
+    }
+	@Override
+	public int compareTo(MyEntry other) 
+	{
+		return -(this.getValue()).compareTo(other.getValue());
 	}
 }
 
