@@ -330,8 +330,8 @@ public class SearcherDB
         		{
             		for (String link: uniqueLinks.keySet())
             		{
-//            			if(pq.size()>100)
-//            				break;
+            			if(pq.size()>150)
+            				break;
             			pq.add(new MyEntry(link,tfidfScore(words,link)));
             		}
         		}
