@@ -1,0 +1,2 @@
+Number of Unique Tokens: 800888
+Size of Index: 155 MB = 155000 KB
