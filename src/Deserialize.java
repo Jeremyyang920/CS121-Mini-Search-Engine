@@ -2,6 +2,7 @@
 // Assignment 3: Search Engine
 // File: Deserialize.java
 
+// Import Statements
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class Deserialize
 		// String s = "";
 		long time = System.currentTimeMillis();
 		
+		// Loop through all of the serialized files.
 		for (int i = 0; i < 75; i++)
 		{
 			try 
@@ -29,15 +31,15 @@ public class Deserialize
 				 ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map;
 				 
 				 /* CHANGE BASED ON COMPUTER */
-		         // FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
 		         // FileInputStream fileIn = new FileInputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser"); 
-		         FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
+		         // FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\" + Integer.toString(i) + ".ser");
 		         
 		         ObjectInputStream in = new ObjectInputStream(fileIn);
 		         map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
-		         for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : map.entrySet())
+		         for (Map.Entry<String, ConcurrentLinkedQueue<String>> entry: map.entrySet())
 		         {
-					if(!everything.containsKey(entry.getKey()))
+					if (!everything.containsKey(entry.getKey()))
 					{
 						everything.put(entry.getKey(),entry.getValue());
 					}
@@ -75,20 +77,20 @@ public class Deserialize
 		try 
 		{
 			/* CHANGE BASED ON COMPUTER */
-			// FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
 			// FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\everything.ser");
-			FileOutputStream fileOut = new FileOutputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			// FileOutputStream fileOut = new FileOutputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
 			
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		    out.writeObject(everything);
 		    out.close();
 		    fileOut.close();
 		    System.out.printf("Serialized data is saved.");
-		 }
-		 catch (IOException i) 
-		 {
-			 i.printStackTrace();
-		 }
+		}
+		catch (IOException i) 
+		{
+			i.printStackTrace();
+		}
 		
 		// System.out.println(uniqueWords.size());
 		

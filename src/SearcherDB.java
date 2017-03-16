@@ -2,6 +2,7 @@
 // Assignment 3: Search Engine
 // File: SearcherDB.java
 
+// Import Statements
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +30,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
@@ -41,8 +41,9 @@ public class SearcherDB
 	private static HashMap<String,Integer> uniqueLinks = new HashMap<String,Integer>(); // map where key = document's link and value = number of hits
 	private static JSONObject js = getJSON(); // reads bookkeeping.json which contains all document/link pairs
 	public static ArrayList<String> stopWords = new ArrayList<String>(); // list of stop words
-	private static PriorityQueue<MyEntry> pq = new PriorityQueue<MyEntry>();
+	private static PriorityQueue<MyEntry> pq = new PriorityQueue<MyEntry>(); // priority queue for storing tfidf scores
 	
+	// Reads the JSON object and returns it.
 	public static JSONObject getJSON() 
 	{
 		JSONParser parser = new JSONParser();
@@ -52,7 +53,7 @@ public class SearcherDB
 			/* CHANGE BASED ON COMPUTER */
 			Object o = parser.parse(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
 			// Object o = parser.parse(new FileReader("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
-			//Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
+			// Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
 			
 			JSONObject json = (JSONObject) o;
 			return json;
@@ -72,6 +73,7 @@ public class SearcherDB
 		return null;
 	}
 	
+	// Calculates the tf score for the term/document pair.
 	public static double tfScore(String term, String docLink) throws SQLException
 	{
 		ResultSet rs = sqlResults.get(term);
@@ -99,6 +101,7 @@ public class SearcherDB
 		return 1.0 + Math.log(count);
 	}
 	
+	// Calculates the idf score for the term.
 	public static double idfScore(String term) throws SQLException
 	{
 		int N = DOC_COUNT;
@@ -112,10 +115,10 @@ public class SearcherDB
 		return 1.0 + Math.log(N/numDocs);
 	}
 	
+	// Calculates the tfidf score and adds additional weight for terms in <h1>, <h2>, <h3>, and <b> tags.
 	public static double tfidfScore(String[] terms, String link) throws SQLException
 	{
 		double total = 0.0;
-		int count=0;
 		try
 		{
 			for (String term: terms)
@@ -126,10 +129,10 @@ public class SearcherDB
 					Statement h2 = conn.createStatement();
 					Statement h3 = conn.createStatement();
 					Statement b = conn.createStatement();
-					String h1s="SELECT COUNT(*) FROM h1  where token = '"+ term +"' and document = '"+ link+"'";
-					String h2s="SELECT COUNT(*) FROM h2  where token ='"+ term +"' and document = '"+ link+"'";
-					String h3s="SELECT COUNT(*) FROM h3  where token ='"+ term +"' and document = '"+ link+"'";
-					String bs="SELECT COUNT(*) FROM b  where token ='"+ term +"' and document = '"+ link+"'";
+					String h1s = "SELECT COUNT(*) FROM h1 where token = '" + term + "' and document = '" + link + "'";
+					String h2s = "SELECT COUNT(*) FROM h2 where token ='" + term + "' and document = '" + link + "'";
+					String h3s = "SELECT COUNT(*) FROM h3 where token ='" + term + "' and document = '" + link + "'";
+					String bs = "SELECT COUNT(*) FROM b where token ='" + term + "' and document = '" + link + "'";
 			
 					ResultSet h1r = h1.executeQuery(h1s);
 					ResultSet h2r =  h2.executeQuery(h2s);
@@ -140,12 +143,12 @@ public class SearcherDB
 					h3r.next();
 					br.next();
 
-					int h1t=Integer.parseInt(h1r.getString(1));
-					int h2t=Integer.parseInt(h1r.getString(1));
-					int h3t=Integer.parseInt(h1r.getString(1));
-					int bt=Integer.parseInt(h1r.getString(1));
-					//System.out.println(h1t+ " "+ h2t+" "+ h3t+" "+bt);
-					total += tfScore(term,link) * idfScore(term)+(h1t*10+h2t*5+h3t*3+bt*1); 
+					int h1t = Integer.parseInt(h1r.getString(1));
+					int h2t = Integer.parseInt(h1r.getString(1));
+					int h3t = Integer.parseInt(h1r.getString(1));
+					int bt = Integer.parseInt(h1r.getString(1));
+					// System.out.println(h1t + " " + h2t + " " + h3t + " " + bt);
+					total += tfScore(term,link) * idfScore(term) + (h1t*10+h2t*5+h3t*3+bt*1); 
 				}
 			}
 		}
@@ -154,15 +157,14 @@ public class SearcherDB
 			e.printStackTrace();
 		}
 		return total;
-
-		
 	}
 	
+	// Runs the user interface (the search engine).
 	public static void main(String[] args) throws SQLException, IOException 
 	{
 		/* CHANGE BASED ON COMPUTER */
 	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
-	    //InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    // InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
 	    
 	    InputStreamReader isr = new InputStreamReader(fis,Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
@@ -210,14 +212,14 @@ public class SearcherDB
         	ConcurrentLinkedQueue<String> result = new ConcurrentLinkedQueue<String>();
         	String[] words = command.split(" ");
         	
-        	if (words.length == 1)
+        	if (words.length == 1) // if it's a 1-word query
         	{
-        		if (!stopWords.contains(words[0]))
+        		if (!stopWords.contains(words[0])) // if it's not a stopword
         		{
         			try 
         			{
         				ResultSet rs;
-        				if (sqlResults.containsKey(words[0]))
+        				if (sqlResults.containsKey(words[0])) // check if it's already in the map
         				{
         					rs = sqlResults.get(words[0]);
         					rs.beforeFirst();
@@ -245,7 +247,7 @@ public class SearcherDB
         			}
                 }
         	}
-        	else if (words.length > 1)
+        	else if (words.length > 1) // if the query has 2+ words
         	{
         		for (String word: words)
             	{
@@ -306,6 +308,7 @@ public class SearcherDB
         	int topN = 5;
         	List<Map.Entry<String,Integer>> list = new LinkedList<Map.Entry<String, Integer>>(uniqueLinks.entrySet());
 
+			// Sort the results and rank them.
         	if (words.length == 1)
         	{
         		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>()
@@ -330,7 +333,7 @@ public class SearcherDB
         		{
             		for (String link: uniqueLinks.keySet())
             		{
-            			if(pq.size()>150)
+            			if (pq.size() > 150)
             				break;
             			pq.add(new MyEntry(link,tfidfScore(words,link)));
             		}
@@ -340,6 +343,7 @@ public class SearcherDB
         			e.printStackTrace();
         		}
         		
+				// Print the top results found.
             	int i = 0;
             	while (!pq.isEmpty() && i < 5)
             	{
@@ -359,11 +363,11 @@ class MyEntry implements Entry<String, Double>, Comparable<MyEntry>
 {
     private final String key;
     private Double value;
-    public MyEntry(final String key) 
+    public MyEntry (final String key) 
     {
         this.key = key;
     }
-    public MyEntry(final String key, final Double value) 
+    public MyEntry (final String key, final Double value) 
     {
         this.key = key;
         this.value = value;
@@ -376,14 +380,14 @@ class MyEntry implements Entry<String, Double>, Comparable<MyEntry>
     {
         return value;
     }
-    public Double setValue(final Double value) 
+    public Double setValue (final Double value) 
     {
         final Double oldValue = this.value;
         this.value = value;
         return oldValue;
     }
 	@Override
-	public int compareTo(MyEntry other) 
+	public int compareTo (MyEntry other) 
 	{
 		return -(this.getValue()).compareTo(other.getValue());
 	}

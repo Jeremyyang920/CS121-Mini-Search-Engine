@@ -2,6 +2,7 @@
 // Assignment 3: Search Engine
 // File: Indexer.java
 
+// Import Statements
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +30,7 @@ import org.jsoup.nodes.Document;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
+
 public class Indexer 
 {
     public static File[] listofFiles = new File[74];
@@ -42,7 +44,7 @@ public class Indexer
     	{
     		q = new ConcurrentLinkedQueue<String>();
     		ConcurrentLinkedQueue<String> curQ = map.putIfAbsent(key, q);
-    		if(curQ != null) 
+    		if (curQ != null) 
     		{
     			q = curQ;
     		}
@@ -100,8 +102,8 @@ public class Indexer
 				try
 				{
 					/* CHANGE BASED ON COMPUTER */
-		    		// String prefix = file.toString().substring(24);
-		    		String prefix = file.toString().substring(40);
+		    		String prefix = file.toString().substring(24);
+		    		// String prefix = file.toString().substring(40);
 		    		
 					PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<CoreLabel>(new FileReader(file.toString()),new CoreLabelTokenFactory(),"untokenizable=noneDelete,normalizeParentheses=false");
 					while (ptbt.hasNext()) 
@@ -149,8 +151,8 @@ public class Indexer
 	public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
 	{
 		/* CHANGE BASED ON COMPUTER */
-	    // InputStream fis = new FileInputStream(new File("StopWords.txt"));
-	    InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
+	    // InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
 	    
 	    InputStreamReader isr = new InputStreamReader(fis,Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
@@ -160,9 +162,9 @@ public class Indexer
 	    br.close();
 	    
 	    /* CHANGE BASED ON COMPUTER */
-		// splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
+		splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
 	    // splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
-		splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
+		// splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		
 		listofFiles = allFiles.toArray(listofFiles);
 		long start = System.nanoTime();

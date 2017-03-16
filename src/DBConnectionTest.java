@@ -2,6 +2,7 @@
 // Assignment 3: Search Engine
 // File: DBConnectionTest.java
 
+// Import Statements
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class DBConnectionTest
 	    String dbPwd = "";
 		Connection conn = null;
 
+		// Try to connect to the local database.
 	    try 
 	    {
 	    	conn = (Connection) DriverManager.getConnection(connectionUrl, dbUser, dbPwd);
@@ -33,8 +35,8 @@ public class DBConnectionTest
 		    java.sql.PreparedStatement statement = conn.prepareStatement("INSERT INTO tokens(token,document) VALUES (?,?)");
 			
 		    /* CHANGE BASED ON COMPUTER */
-		    // FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
-			FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		    FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+			// FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
 		    
 		    ObjectInputStream in = new ObjectInputStream(fileIn);
 			

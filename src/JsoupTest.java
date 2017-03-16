@@ -2,6 +2,7 @@
 // Assignment 3: Search Engine
 // File: JsoupTest.java
 
+// Import Statements
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Pattern;
-
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.HasWord;
@@ -27,7 +27,6 @@ import edu.stanford.nlp.process.PTBTokenizer;
 
 public class JsoupTest 
 {
-	
 	 static void addElement(ConcurrentHashMap<String,ConcurrentLinkedQueue<String>>map, String key, String value)
 	    {
 	    	ConcurrentLinkedQueue<String> q = map.get(key);
@@ -35,7 +34,7 @@ public class JsoupTest
 	    	{
 	    		q = new ConcurrentLinkedQueue<String>();
 	    		ConcurrentLinkedQueue<String> curQ = map.putIfAbsent(key, q);
-	    		if(curQ != null) 
+	    		if (curQ != null) 
 	    		{
 	    			q = curQ;
 	    		}
@@ -47,10 +46,9 @@ public class JsoupTest
 	{
 		ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> map = new ConcurrentHashMap<>();
 		
-		
-	    		
 		PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<CoreLabel>(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\0\\14"),
 			              new CoreLabelTokenFactory(),"");
+						  
 		while (ptbt.hasNext()) 
 		{
 		        String label = ptbt.next().originalText();
@@ -60,31 +58,28 @@ public class JsoupTest
 		        		addElement(map,label,"0\\14");
 		        }	
 		}
-			
 		
-//		for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : map.entrySet())
-//		{
-//			System.out.println(entry.getKey()+"->"+entry.getValue().toString());
-//		}
+		// for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : map.entrySet())
+		// {
+			// System.out.println(entry.getKey()+"->"+entry.getValue().toString());
+		// }
 		
-		 FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\test.ser");
-		 ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		 out.writeObject(map);
-		 out.close();
-		 fileOut.close();
-		 map=null;
+		FileOutputStream fileOut = new FileOutputStream("D:\\Desktop\\WEBPAGES_RAW\\test.ser");
+		ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		out.writeObject(map);
+		out.close();
+		fileOut.close();
+		map = null;
 		 
 		FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\test.ser");
 		ObjectInputStream in = new ObjectInputStream(fileIn);
 	    map = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
 	    System.out.println("NEW MAP");
-	    for(Map.Entry<String, ConcurrentLinkedQueue<String>> entry : map.entrySet())
+	    
+		for (Map.Entry<String, ConcurrentLinkedQueue<String>> entry: map.entrySet())
 		{
 			System.out.println(entry.getKey()+"->"+entry.getValue().toString());
 		}
 	}
-	
-	
 }
-
 

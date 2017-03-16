@@ -2,6 +2,7 @@
 // Assignment 3: Search Engine
 // File: HeaderIndexer.java
 
+// Import Statements
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,7 +50,7 @@ public class HeaderIndexer
     	{
     		q = new ConcurrentLinkedQueue<String>();
     		ConcurrentLinkedQueue<String> curQ = map.putIfAbsent(key, q);
-    		if(curQ != null) 
+    		if (curQ != null) 
     		{
     			q = curQ;
     		}
@@ -108,8 +109,9 @@ public class HeaderIndexer
 				{
 					/* CHANGE BASED ON COMPUTER */
 		    		String prefix = file.toString().substring(24);
-		    		//String prefix = file.toString().substring(40);
+		    		// String prefix = file.toString().substring(40);
 		    		
+					// Find all of the <h1>, <h2>, <h3>, and <b> tags.
 		    		Document fileDoc = Jsoup.parse(file.toFile(), "UTF-8");
 		    		Elements h1 = fileDoc.getElementsByTag("h1");
 		    		Elements h2 = fileDoc.getElementsByTag("h2");
@@ -212,7 +214,7 @@ public class HeaderIndexer
 	{
 		/* CHANGE BASED ON COMPUTER */
 	    InputStream fis = new FileInputStream(new File("StopWords.txt"));
-	    //InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
+	    // InputStream fis = new FileInputStream(new File("C:\\Users\\anujs_000\\Desktop\\StopWords.txt"));
 	    
 	    InputStreamReader isr = new InputStreamReader(fis,Charset.forName("UTF-8"));
 	    BufferedReader br = new BufferedReader(isr);
@@ -223,8 +225,8 @@ public class HeaderIndexer
 	    
 	    /* CHANGE BASED ON COMPUTER */
 		splitFile(Paths.get("D:\\Desktop\\WEBPAGES_RAW"));
-	    //splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
-		//splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
+	    // splitFile(Paths.get("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW"));
+		// splitFile(Paths.get("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW"));
 		
 		listofFiles = allFiles.toArray(listofFiles);
 		long start = System.nanoTime();

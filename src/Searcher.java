@@ -2,6 +2,7 @@
 // Assignment 3: Search Engine
 // File: Searcher.java
 
+// Import Statements
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -27,6 +28,7 @@ public class Searcher
 	private static HashMap<String,Integer> uniqueLinks = new HashMap<String,Integer>(); // map where key = document's link and value = number of hits
 	private static JSONObject js = getJSON(); // reads bookkeeping.json which contains all document/link pairs
 	
+	// Reads the JSON object and returns it.
 	public static JSONObject getJSON()
 	{
 		JSONParser parser = new JSONParser();
@@ -34,9 +36,9 @@ public class Searcher
 		try
 		{
 			/* CHANGE BASED ON COMPUTER */
-			// Object o = parser.parse(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
+			Object o = parser.parse(new FileReader("D:\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
 			// Object o = parser.parse(new FileReader("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
-			Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
+			// Object o = parser.parse(new FileReader("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\bookkeeping.json"));
 			
 			JSONObject json = (JSONObject) o;
 			return json;
@@ -56,6 +58,7 @@ public class Searcher
 		return null;
 	}
 	
+	// Calculates the tf score for the term/document pair.
 	public static double tfScore(String term, String docLink)
 	{
 		if (!everything.containsKey(term) || everything.get(term).size() == 0)
@@ -80,6 +83,7 @@ public class Searcher
 		return 1.0 + Math.log(count);
 	}
 	
+	// Calculates the idf score for the term.
 	public static double idfScore(String term)
 	{
 		int N = DOC_COUNT;
@@ -89,6 +93,7 @@ public class Searcher
 		return 1.0 + Math.log(N/numDocs);
 	}
 	
+	// Calculates the tfidf score.
 	public static double tfidfScore(String[] terms, String link)
 	{
 		double total = 0.0;
@@ -99,13 +104,14 @@ public class Searcher
 		return total;
 	}
 	
+	// Runs the user interface (the search engine).
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException, ClassNotFoundException 
 	{
 		/* CHANGE BASED ON COMPUTER */
-		// FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		FileInputStream fileIn = new FileInputStream("D:\\Desktop\\WEBPAGES_RAW\\everything.ser");
 		// FileInputStream fileIn = new FileInputStream("C:\\Users\\Jeremy\\Desktop\\WEBPAGES_RAW\\everything.ser");
-		FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
+		// FileInputStream fileIn = new FileInputStream("C:\\Users\\anujs_000\\Desktop\\WEBPAGES_RAW\\everything.ser");
 		
 		ObjectInputStream in = new ObjectInputStream(fileIn);
         everything = (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>) in.readObject();
